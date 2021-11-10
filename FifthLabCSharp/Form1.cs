@@ -12,14 +12,15 @@ namespace FifthLabCSharp
         private Marker _marker;
         private Player _player;
 
+        private int _score = 0;
+
         public Form1()
         {
             InitializeComponent();
 
             _player = new Player(pbMain.Width / 2, pbMain.Height / 2, 0, 30, 30);
-            _marker = new Marker(pbMain.Width / 3, pbMain.Height / 3, 0, 20, 20);
+            _marker = null;
 
-            _objects.Add(_marker);
             _objects.Add(_player);
         }
 
@@ -29,23 +30,40 @@ namespace FifthLabCSharp
 
             g.Clear(Color.White);
 
-            foreach (var obj in _objects)
+            foreach (var obj in _objects.ToArray())
             {
+                if (!(obj is Player) && _player.Overlaps(obj, g))
+                {
+                    if (obj is Marker)
+                    {
+                        _objects.Remove(_marker);
+                        _marker = null;
+                    }
+
+                    if (obj is Enemy)
+                    {
+                        _score++;
+                        ScoreLabel.Text = $"Счет: {_score}";
+                    }
+                }
+
                 obj.Render(g);
             }
-
-            _player.MoveTo(_marker);
-
-            pbMain.Invalidate();
         }
 
         private void pbMain_MouseClick(object sender, MouseEventArgs e)
         {
-            _objects.Remove(_marker);
+            if (_marker!= null)
+                _objects.Remove(_marker);
 
             _marker = new Marker(e.X, e.Y, 0, 20, 20);
             _objects.Add(_marker);
-            
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            _player.MoveTo(_marker);
+
             pbMain.Invalidate();
         }
     }

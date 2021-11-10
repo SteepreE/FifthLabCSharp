@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 class Player : BaseObject
 {
@@ -14,18 +15,22 @@ class Player : BaseObject
 
     public void MoveTo(BaseObject target)
     {
-        float dx = target.getX() - _x;
-        float dy = target.getY() - _y;
+        if (target != null)
+        {
+            float dx = target.getX() - _x;
+            float dy = target.getY() - _y;
 
-        float length = (float)Math.Sqrt(dx * dx + dy * dy);
+            float length = (float)Math.Sqrt(dx * dx + dy * dy);
 
-        dx /= length;
-        dy /= length;
+            dx /= length;
+            dy /= length;
 
-        _vX += dx * 0.02f;
-        _vY += dy * 0.02f;
+            _vX += dx * 0.5f;
+            _vY += dy * 0.5f;
 
-        _angle = (float)(90 - Math.Atan2(_vX, _vY) * 180 / Math.PI);
+            _angle = (float)(90 - Math.Atan2(_vX, _vY) * 180 / Math.PI);
+        }
+
 
         _vX += -_vX * 0.1f;
         _vY += -_vY * 0.1f;
@@ -51,5 +56,17 @@ class Player : BaseObject
         );
 
         g.DrawLine(new Pen(Color.Black, 2), 0, 0, 25, 0);
+    }
+
+    protected override GraphicsPath GetGraphicsPath()
+    {
+        var path = base.GetGraphicsPath();
+
+        path.AddEllipse(
+            0 - _width / 2, 0 - _height / 2,
+            _width, _height
+            );
+
+        return path;
     }
 }

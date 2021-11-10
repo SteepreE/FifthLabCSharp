@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Drawing;
+using System;
 
 abstract class BaseObject
 {
@@ -9,6 +10,8 @@ abstract class BaseObject
 
     protected int _height;
     protected int _width;
+
+    public Action<BaseObject, BaseObject> OnOverlap;
 
     public BaseObject(float x, float y, float angle, int height, int width)
     {
@@ -38,6 +41,33 @@ abstract class BaseObject
     public float getY()
     {
         return _y;
+    }
+
+    protected virtual GraphicsPath GetGraphicsPath()
+    {
+        return new GraphicsPath();
+    }
+
+    public virtual bool Overlaps(BaseObject obj, Graphics g)
+    {
+        var path1 = this.GetGraphicsPath();
+        var path2 = obj.GetGraphicsPath();
+
+        path1.Transform(this.GetTMatrix());
+        path2.Transform(obj.GetTMatrix());
+
+        var region = new Region(path1);
+        region.Intersect(path2);
+
+        return !region.IsEmpty(g);
+    }
+
+    public virtual void Overlap(BaseObject obj)
+    {
+        if (this.OnOverlap != null)
+        {
+            this.OnOverlap(this, obj);
+        }
     }
 
     public virtual void Render(Graphics g)
