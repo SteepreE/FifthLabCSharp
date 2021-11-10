@@ -27,7 +27,7 @@ namespace FifthLabCSharp
 
         private void InitPlayer()
         {
-            _player = new Player(pbMain.Width / 2, pbMain.Height / 2, 0, 30, 30, Color.DeepPink);
+            _player = new Player(pbMain.Width / 2, pbMain.Height / 2, 0, 30, 30);
 
             _player.OnOverlap += (player, obj) =>
             {
@@ -38,12 +38,12 @@ namespace FifthLabCSharp
                 }
                 else if (obj is Enemy)
                 {
-                    _objects.Remove(obj);
+                    var tempObj = obj as Enemy;
 
                     _score++;
                     ScoreLabel.Text = $"Счет: {_score}";
 
-                    _objects.Add(GenerateEnemy());
+                    tempObj.Destroy(tempObj);
                 }
             };
 
@@ -53,8 +53,7 @@ namespace FifthLabCSharp
         private void InitBlackZone()
         {
             _blackZone = new BlackZone(
-                0 - (pbMain.Width / 3) / 2, pbMain.Height / 2, 0, pbMain.Height, pbMain.Width / 3,
-                Color.Black
+                0 - (pbMain.Width / 3) / 2, pbMain.Height / 2, 0, pbMain.Height, pbMain.Width / 3
                 );
 
             _objects.Add(_blackZone);
@@ -70,9 +69,20 @@ namespace FifthLabCSharp
 
         private Enemy GenerateEnemy()
         {
-            return new Enemy(
-                rnd.Next(pbMain.Width - 15), 15 + rnd.Next(pbMain.Height - 15), 0, 30, 30, Color.Green
+            int size = 45 + rnd.Next(16);
+
+            var newEnemy = new Enemy(
+                15 + rnd.Next(pbMain.Width - 15), 15 + rnd.Next(pbMain.Height - 15), 0, 
+                size, size
                 );
+
+            newEnemy.OnDestroy += (enemy) =>
+            {
+                _objects.Remove(enemy);
+                _objects.Add(GenerateEnemy());
+            };
+
+            return newEnemy;
         }
 
         private void pbMain_Paint(object sender, PaintEventArgs e)
@@ -83,22 +93,35 @@ namespace FifthLabCSharp
 
             foreach (var obj in _objects.ToArray())
             {
-                if (!(obj is Player) && _player.Overlaps(obj, g))
+                if (obj != _player && _player.Overlaps(obj, g))
                 {
                     _player.Overlap(obj);
+                }
+                else if (obj != _blackZone)
+                {
+                    if (obj.Overlaps(_blackZone, g))
+                    {
+                        obj.EnterBlackZone(_blackZone);
+                    }
+                    else
+                    {
+                        obj.LeftBlackZone(_blackZone);
+                    }
+
+                    if (obj is Enemy)
+                    {
+                        var tempObj = obj as Enemy;
+
+                        tempObj.Destruction();
+                    }
+                }
+                else if (obj == _blackZone && !_blackZone.IsOnScreen(pbMain))
+                {
+                    _blackZone.ScreenLeft(pbMain);
                 }
 
                 obj.Render(g);
             }
-        }
-
-        private void pbMain_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (_marker!= null)
-                _objects.Remove(_marker);
-
-            _marker = new Marker(e.X, e.Y, 0, 20, 20, Color.Red);
-            _objects.Add(_marker);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -107,6 +130,15 @@ namespace FifthLabCSharp
             _blackZone.Move();
 
             pbMain.Invalidate();
+        }
+
+        private void pbMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_marker != null)
+                _objects.Remove(_marker);
+
+            _marker = new Marker(e.X, e.Y, 0, 20, 20);
+            _objects.Add(_marker);
         }
     }
 }

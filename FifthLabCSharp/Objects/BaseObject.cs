@@ -1,6 +1,7 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Drawing;
 using System;
+using System.Windows.Forms;
 
 abstract class BaseObject
 {
@@ -8,14 +9,16 @@ abstract class BaseObject
     protected float _y;
     protected float _angle;
 
-    protected int _height;
-    protected int _width;
+    protected float _height;
+    protected float _width;
 
-    protected Color _color;
+    protected bool _isInBlackZone = false;
 
     public Action<BaseObject, BaseObject> OnOverlap;
+    public Action<BaseObject, BlackZone> OnEnterBlackZone;
+    public Action<BaseObject, BlackZone> OnLeftBlackZone;
 
-    public BaseObject(float x, float y, float angle, int height, int width, Color color)
+    public BaseObject(float x, float y, float angle, int height, int width)
     {
         _x = x;
         _y = y;
@@ -24,7 +27,17 @@ abstract class BaseObject
         _height = height;
         _width = width;
 
-        _color = color;
+        OnEnterBlackZone += (obj, blackZone) =>
+        {
+            if (!_isInBlackZone)
+                _isInBlackZone = true;
+        };
+
+        OnLeftBlackZone += (obj, blackZone) =>
+        {
+            if (_isInBlackZone)
+                _isInBlackZone = false;
+        };
     }
 
     protected Matrix GetTMatrix()
@@ -47,9 +60,14 @@ abstract class BaseObject
         return _y;
     }
 
-    public void SetColor(Color color)
+    public float GetWidth()
     {
-        _color = color;
+        return _width;
+    }
+
+    public float GetHeight()
+    {
+        return _height;
     }
 
     protected virtual GraphicsPath GetGraphicsPath()
@@ -71,12 +89,24 @@ abstract class BaseObject
         return !region.IsEmpty(g);
     }
 
+    public bool IsOnScreen(PictureBox pb)
+    {
+        return (_x - _width / 2) < pb.Width || (_y + _height / 2) < pb.Height;
+    }
+
     public virtual void Overlap(BaseObject obj)
     {
-        if (this.OnOverlap != null)
-        {
-            this.OnOverlap(this, obj);
-        }
+        OnOverlap?.Invoke(this, obj);
+    }
+
+    public virtual void EnterBlackZone(BlackZone blackZone)
+    {
+        OnEnterBlackZone?.Invoke(this, blackZone);
+    }
+
+    public virtual void LeftBlackZone(BlackZone blackZone)
+    {
+        OnLeftBlackZone?.Invoke(this, blackZone);
     }
 
     public virtual void Render(Graphics g)

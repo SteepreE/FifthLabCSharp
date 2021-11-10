@@ -3,8 +3,8 @@ using System.Drawing;
 
 class Marker : BaseObject
 {
-    public Marker(float x, float y, float angle, int height, int width, Color color) :
-        base(x, y, angle, height, width, color)
+    public Marker(float x, float y, float angle, int height, int width) :
+        base(x, y, angle, height, width)
     {
 
     }
@@ -13,7 +13,7 @@ class Marker : BaseObject
     {
         g.Transform = GetTMatrix();
 
-        g.DrawEllipse(new Pen(_color, 2), 
+        g.DrawEllipse(new Pen(Color.Red, 2), 
             0 - _width / 2, 0 - _height / 2, 
             _width, _height
             );

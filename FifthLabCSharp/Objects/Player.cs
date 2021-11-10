@@ -6,8 +6,8 @@ class Player : BaseObject
 {
     private float _vX, _vY;
 
-    public Player(float x, float y, float angle, int height, int width, Color color) : 
-        base(x, y, angle, height, width, color)
+    public Player(float x, float y, float angle, int height, int width) : 
+        base(x, y, angle, height, width)
     {
         _vX = 0;
         _vY = 0;
@@ -43,6 +43,8 @@ class Player : BaseObject
     {
         g.Transform = GetTMatrix();
 
+        var color = (_isInBlackZone) ? Color.White : Color.DeepPink;
+
         g.DrawEllipse(
             new Pen(Color.Black, 2),
             0 - _width / 2, 0 - _height / 2,
@@ -50,7 +52,7 @@ class Player : BaseObject
         );
 
         g.FillEllipse(
-            new SolidBrush(_color),
+            new SolidBrush(color),
             0 - _width / 2, 0 - _height / 2,
             _width, _height
         );
