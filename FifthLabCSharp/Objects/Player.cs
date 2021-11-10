@@ -6,8 +6,8 @@ class Player : BaseObject
 {
     private float _vX, _vY;
 
-    public Player(float x, float y, float angle, int height, int width) : 
-        base(x, y, angle, height, width)
+    public Player(float x, float y, float angle, int height, int width, Color color) : 
+        base(x, y, angle, height, width, color)
     {
         _vX = 0;
         _vY = 0;
@@ -17,8 +17,8 @@ class Player : BaseObject
     {
         if (target != null)
         {
-            float dx = target.getX() - _x;
-            float dy = target.getY() - _y;
+            float dx = target.GetX() - _x;
+            float dy = target.GetY() - _y;
 
             float length = (float)Math.Sqrt(dx * dx + dy * dy);
 
@@ -50,7 +50,7 @@ class Player : BaseObject
         );
 
         g.FillEllipse(
-            new SolidBrush(Color.DeepPink),
+            new SolidBrush(_color),
             0 - _width / 2, 0 - _height / 2,
             _width, _height
         );

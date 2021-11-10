@@ -11,9 +11,11 @@ abstract class BaseObject
     protected int _height;
     protected int _width;
 
+    protected Color _color;
+
     public Action<BaseObject, BaseObject> OnOverlap;
 
-    public BaseObject(float x, float y, float angle, int height, int width)
+    public BaseObject(float x, float y, float angle, int height, int width, Color color)
     {
         _x = x;
         _y = y;
@@ -21,6 +23,8 @@ abstract class BaseObject
 
         _height = height;
         _width = width;
+
+        _color = color;
     }
 
     protected Matrix GetTMatrix()
@@ -33,14 +37,19 @@ abstract class BaseObject
         return matrix;
     }
 
-    public float getX()
+    public float GetX()
     {
         return _x;
     }
 
-    public float getY()
+    public float GetY()
     {
         return _y;
+    }
+
+    public void SetColor(Color color)
+    {
+        _color = color;
     }
 
     protected virtual GraphicsPath GetGraphicsPath()
