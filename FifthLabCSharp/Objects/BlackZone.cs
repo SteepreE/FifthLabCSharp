@@ -22,7 +22,7 @@ class BlackZone : BaseObject
     {
         List<BaseObject> newObjsList = new List<BaseObject>();
 
-        foreach(var newObj in _newObjsInZone)
+        foreach(var newObj in _newObjsInZone)//Находим исключительно новые обьекты в зоне, и добавляем в список
         {
             if (!_objsInZone.Contains(newObj))
             {
@@ -32,7 +32,7 @@ class BlackZone : BaseObject
             newObjsList.Add(newObj);
         }
 
-        foreach(var oldObj in _objsInZone)
+        foreach(var oldObj in _objsInZone)//Находим те обьекты, которые были, но теперь их нэту
         {
             if (!newObjsList.Contains(oldObj))
             {

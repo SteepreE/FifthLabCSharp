@@ -94,27 +94,46 @@ namespace FifthLabCSharp
         {
             var g = e.Graphics;
 
-            g.Clear(Color.White);
+            EnemiesDestruction();
+            CheckOverlaps(g);
+            RenderObjects(g);
+        }
 
+        private void EnemiesDestruction()
+        {
+            foreach (var obj in _objects.ToArray())
+            {
+                if (obj is Enemy)
+                {
+                    var enemy = obj as Enemy;
+
+                    enemy.Destruction();
+                }
+            }
+        }
+
+        private void CheckOverlaps(Graphics g)
+        {
             foreach (var obj in _objects.ToArray())
             {
                 if (obj != _player && _player.Overlaps(obj, g))
                 {
                     _player.Overlap(obj);
                 }
-                
-                if (obj is Enemy)
-                {
-                    var tempObj = obj as Enemy;
 
-                    tempObj.Destruction();
-                }
-                
                 if (obj != _blackZone && _blackZone.Overlaps(obj, g))
                 {
                     _blackZone.Overlap(obj);
                 }
+            }
+        }
 
+        private void RenderObjects(Graphics g)
+        {
+            g.Clear(Color.White);
+            
+            foreach (var obj in _objects)
+            {
                 obj.Render(g);
             }
         }
