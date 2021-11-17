@@ -15,8 +15,6 @@ abstract class BaseObject
     protected bool _isInBlackZone = false;
 
     public Action<BaseObject, BaseObject> OnOverlap;
-    public Action<BaseObject, BlackZone> OnEnterBlackZone;
-    public Action<BaseObject, BlackZone> OnLeftBlackZone;
 
     public BaseObject(float x, float y, float angle, int height, int width)
     {
@@ -26,18 +24,6 @@ abstract class BaseObject
 
         _height = height;
         _width = width;
-
-        OnEnterBlackZone += (obj, blackZone) =>
-        {
-            if (!_isInBlackZone)
-                _isInBlackZone = true;
-        };
-
-        OnLeftBlackZone += (obj, blackZone) =>
-        {
-            if (_isInBlackZone)
-                _isInBlackZone = false;
-        };
     }
 
     protected Matrix GetTMatrix()
@@ -97,16 +83,6 @@ abstract class BaseObject
     public virtual void Overlap(BaseObject obj)
     {
         OnOverlap?.Invoke(this, obj);
-    }
-
-    public virtual void EnterBlackZone(BlackZone blackZone)
-    {
-        OnEnterBlackZone?.Invoke(this, blackZone);
-    }
-
-    public virtual void LeftBlackZone(BlackZone blackZone)
-    {
-        OnLeftBlackZone?.Invoke(this, blackZone);
     }
 
     public virtual void Render(Graphics g)

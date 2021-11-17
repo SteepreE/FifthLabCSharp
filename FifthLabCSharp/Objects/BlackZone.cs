@@ -9,15 +9,13 @@ using System;
 
 class BlackZone : BaseObject
 {
-    public Action<BlackZone, PictureBox> OnScreenLeft;
+    public List<BaseObject> _objsInZone = new List<BaseObject>();
+    public List<BaseObject> _lastObjsInZone = new List<BaseObject>();
 
     public BlackZone(float x, float y, float angle, int height, int width) :
         base(x, y, angle, height, width)
     {
-        OnScreenLeft += (blackZone, pbMain) =>
-        {
-            _x = 0 - _width / 2;
-        };
+        
     }
 
     public void Move()
@@ -25,9 +23,9 @@ class BlackZone : BaseObject
         _x += 1.5f;
     }
 
-    public void ScreenLeft(PictureBox pb)
+    public void ToStart()
     {
-        OnScreenLeft?.Invoke(this, pb);
+        _x = 0 - _width / 2;
     }
 
     public override void Render(Graphics g)
