@@ -36,6 +36,11 @@ abstract class BaseObject
         return matrix;
     }
 
+    public void OverlapBlackZone()
+    {
+        _isInBlackZone = !_isInBlackZone;
+    }
+
     public float GetX()
     {
         return _x;

@@ -9,13 +9,45 @@ using System;
 
 class BlackZone : BaseObject
 {
-    public List<BaseObject> _objsInZone = new List<BaseObject>();
-    public List<BaseObject> _lastObjsInZone = new List<BaseObject>();
+    private List<BaseObject> _objsInZone = new List<BaseObject>();
+    private List<BaseObject> _newObjsInZone = new List<BaseObject>();
 
     public BlackZone(float x, float y, float angle, int height, int width) :
         base(x, y, angle, height, width)
     {
         
+    }
+
+    public void UpdateObjsInZone()
+    {
+        List<BaseObject> newObjsList = new List<BaseObject>();
+
+        foreach(var newObj in _newObjsInZone)
+        {
+            if (!_objsInZone.Contains(newObj))
+            {
+                newObj.OverlapBlackZone();
+            }
+
+            newObjsList.Add(newObj);
+        }
+
+        foreach(var oldObj in _objsInZone)
+        {
+            if (!newObjsList.Contains(oldObj))
+            {
+                oldObj.OverlapBlackZone();
+            }
+        }
+
+        _objsInZone = newObjsList;
+
+        _newObjsInZone.Clear();
+    }
+
+    public void AddNewObject(BaseObject obj)
+    {
+        _newObjsInZone.Add(obj);
     }
 
     public void Move()

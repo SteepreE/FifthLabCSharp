@@ -58,10 +58,7 @@ namespace FifthLabCSharp
 
             _blackZone.OnOverlap += (bz, obj) =>
             {
-                if (!_blackZone._objsInZone.Contains(obj))
-                {
-                    _blackZone._objsInZone.Add(obj);
-                }
+                _blackZone.AddNewObject(obj);
             };
 
             _objects.Add(_blackZone);
@@ -105,15 +102,17 @@ namespace FifthLabCSharp
                 {
                     _player.Overlap(obj);
                 }
+                
                 if (obj is Enemy)
                 {
                     var tempObj = obj as Enemy;
 
                     tempObj.Destruction();
                 }
-                else if (obj == _blackZone && !_blackZone.IsOnScreen(pbMain))
+                
+                if (obj != _blackZone && _blackZone.Overlaps(obj, g))
                 {
-                    _blackZone.ToStart();
+                    _blackZone.Overlap(obj);
                 }
 
                 obj.Render(g);
@@ -123,7 +122,11 @@ namespace FifthLabCSharp
         private void timer1_Tick(object sender, EventArgs e)
         {
             _player.MoveTo(_marker);
-            _blackZone.Move();
+
+            if (!_blackZone.IsOnScreen(pbMain)) _blackZone.ToStart();
+            else _blackZone.Move();
+
+            _blackZone.UpdateObjsInZone();
 
             pbMain.Invalidate();
         }
